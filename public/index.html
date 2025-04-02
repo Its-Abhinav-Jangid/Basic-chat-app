@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat App</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="chat-app">
+      <!-- Sidebar with Chat Rooms -->
+      <div class="sidebar">
+        <ul>
+          <li><a href="#">Chat Room 1</a></li>
+          <li><a href="#">Chat Room 2</a></li>
+          <li><a href="#">Chat Room 3</a></li>
+        </ul>
+      </div>
+      <!-- Chat Area -->
+      <div class="chat-area">
+        <div class="chat-header">
+          <h2>Chat Room Name</h2>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <form class="chat-input" id="message-form">
+          <input
+            autocomplete="off"
+            type="text"
+            placeholder="Type a message..."
+            id="message"
+          />
+          <button>Send</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+      const socket = io();
+      const input = document.getElementById("message");
+      const messageForm = document.getElementById("message-form");
+      const allMessages = document.getElementById("chat-messages");
+      messageForm.addEventListener("submit", handleSubmit);
+      function handleSubmit(e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit("message", input.value);
+          input.value = "";
+        }
+      }
+      socket.on("message", (message) => {
+        const newMessageElement = document.createElement("div");
+        newMessageElement.textContent = message.content;
+        newMessageElement.classList.add("message");
+        newMessageElement.classList.add(
+          message.userId === socket.id ? "sent" : "received"
+        );
+        allMessages.appendChild(newMessageElement);
+        allMessages.scrollTo(0, allMessages.scrollHeight);
+      });
+    </script>
+  </body>
+</html>
